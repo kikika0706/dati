@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Darba Laika Uzskaite</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-padding-top: 120px; }
+
+:root {
+  --navy:    #4a6080;
+  --blue:    #2d5be3;
+  --blue-lt: #e8eeff;
+  --green:   #1a7a4a;
+  --grn-lt:  #e6f4ec;
+  --amber:   #e08c00;
+  --red:     #c0392b;
+  --ink:     #4a6080;
+  --muted:   #6b7a99;
+  --border:  #d0d8ea;
+  --surface: #f4f6fb;
+  --white:   #ffffff;
+  --radius:  6px;
+  --mono:    'DM Mono', monospace;
+  --sans:    'DM Sans', sans-serif;
+}
+
+body { font-family: var(--sans); background: var(--surface); color: var(--ink); min-height: 100vh; }
+
+/* ── Header ── */
+.app-header {
+  background: var(--navy); color: #fff;
+  padding: 0 1.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 52px; position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 2px 12px rgba(26,39,68,.3);
+}
+.app-header h1 { font-size: 14px; font-weight: 600; letter-spacing: .02em; }
+.app-header .sub { font-size: 11px; color: rgba(255,255,255,.5); margin-left: 10px; }
+.header-actions { display: flex; gap: 8px; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 6px 14px; border-radius: var(--radius);
+  font-family: var(--sans); font-size: 12px; font-weight: 500;
+  cursor: pointer; border: none; transition: all .15s; white-space: nowrap;
+}
+.btn-primary { background: var(--blue); color: #fff; }
+.btn-primary:hover { background: #1e47c9; }
+.btn-outline { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.3); }
+.btn-outline:hover { background: rgba(255,255,255,.1); }
+
+.main { max-width: 1400px; margin: 0 auto; padding: 20px 16px; }
+
+/* ── Setup ── */
+.setup-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px 20px; margin-bottom: 16px;
+}
+.setup-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 11px; font-weight: 500; color: var(--muted); }
+.field select, .field input {
+  font-family: var(--sans); font-size: 14px;
+  padding: 7px 10px; border: 1px solid var(--border);
+  border-radius: var(--radius); background: var(--white); color: var(--ink);
+  outline: none; transition: border-color .15s;
+}
+.field select:focus, .field input:focus { border-color: var(--blue); }
+.field select { min-width: 180px; }
+
+/* ── DESKTOP table ── */
+.table-wrap {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 10px; overflow-x: auto;
+  scroll-margin-top: 52px;
+}
+.emp-group td.emp-name { scroll-margin-top: 120px; }
+
+table.grid {
+  border-collapse: collapse; font-size: 11px; width: 100%;
+  table-layout: fixed;
+}
+
+table.grid th {
+  background: var(--navy); color: #fff;
+  font-size: 10px; font-weight: 500; text-align: center;
+  padding: 6px 2px; white-space: nowrap;
+  border: 1px solid rgba(255,255,255,.1);
+  position: sticky; top: 0; overflow: hidden;
+}
+table.grid th.col-name {
+  text-align: left; padding-left: 10px;
+  position: sticky; left: 0; z-index: 10; background: var(--navy);
+}
+table.grid th.col-type { width: 44px; }
+table.grid th.col-sum  { background: #3a5070; width: 48px; }
+table.grid th.col-day  { width: 36px; }
+table.grid th.weekend  { background: #3d5575; }
+th.holiday    { background: #7a2525 !important; }
+th.preholiday { background: #5a4010 !important; }
+
+.emp-group td.emp-name {
+  background: #f8f9fc; font-weight: 600; font-size: 12px;
+  padding: 0 10px; border-left: 3px solid var(--blue);
+  border-bottom: 1px solid var(--border);
+  position: sticky; left: 0; z-index: 5; vertical-align: middle;
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.emp-group td.type-amb {
+  background: var(--blue-lt); font-family: var(--mono); font-size: 10px;
+  font-weight: 500; color: var(--blue); text-align: center;
+  border: 1px solid #c8d8f8;
+}
+.emp-group td.type-stac {
+  background: var(--grn-lt); font-family: var(--mono); font-size: 10px;
+  font-weight: 500; color: var(--green); text-align: center;
+  border: 1px solid #b8e0cc;
+}
+
+.row-amb  td.data-cell { background: var(--blue-lt); border: 1px solid #c8d8f8; }
+.row-stac td.data-cell { background: var(--grn-lt);  border: 1px solid #b8e0cc; }
+.row-amb  td.data-cell.wd { background: #dde8ff; }
+.row-stac td.data-cell.wd { background: #cce0d4; }
+td.no-day { background: #eef0f5 !important; border: 1px solid #dde2ed !important; }
+
+td.data-cell { padding: 1px; height: 30px; text-align: center; }
+td.data-cell input {
+  width: 100%; height: 100%; border: none; background: transparent;
+  font-family: var(--mono); font-size: 10px;
+  text-align: center; color: var(--ink); outline: none; padding: 1px;
+}
+td.data-cell input:focus { background: rgba(45,91,227,.12); border-radius: 2px; }
+td.data-cell input.special { color: var(--amber); font-weight: 500; }
+
+td.cell-sum {
+  background: var(--blue-lt); font-family: var(--mono); font-size: 11px;
+  font-weight: 600; text-align: center; color: var(--navy);
+  border: 1px solid #c8d8f8; padding: 2px;
+}
+td.cell-sum.stac-sum { background: var(--grn-lt); border-color: #b8e0cc; }
+
+tr.sep td { height: 5px; background: var(--surface); border: none; }
+
+/* ── MOBILE card view ── */
+.mobile-view { display: none; }
+
+.emp-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 10px; margin-bottom: 10px; overflow: hidden;
+}
+.emp-card-header {
+  background: var(--navy); color: #fff;
+  padding: 13px 16px; font-size: 15px; font-weight: 600;
+  display: flex; align-items: center; justify-content: space-between;
+  cursor: pointer; user-select: none;
+}
+.emp-card-header .chev { font-size: 13px; opacity: .7; transition: transform .2s; }
+.emp-card-header.open .chev { transform: rotate(180deg); }
+.emp-card-body { display: none; }
+.emp-card-body.open { display: block; }
+
+/* Mobile: day-by-day list, AMB+STAC side by side */
+.mob-days { padding: 8px 10px 4px; display: flex; flex-direction: column; gap: 5px; }
+
+.mob-day-row {
+  display: grid; grid-template-columns: 38px 1fr 1fr;
+  align-items: center; gap: 6px;
+}
+.mob-day-row.only-amb { grid-template-columns: 38px 1fr; }
+
+.mob-day-lbl {
+  font-size: 13px; font-weight: 600; color: var(--ink);
+  line-height: 1; text-align: center;
+}
+.mob-day-lbl .dow {
+  font-size: 9px; font-weight: 400; color: var(--muted);
+  display: block; text-align: center; margin-top: 1px;
+}
+.mob-day-row.wd .mob-day-lbl { color: var(--red); }
+.mob-day-row.wd .mob-day-lbl .dow { color: var(--red); opacity: .7; }
+
+.mob-field { display: flex; flex-direction: column; gap: 2px; }
+.mob-field-lbl {
+  font-size: 9px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--blue); padding-left: 2px;
+}
+.mob-field-lbl.stac { color: var(--green); }
+
+.mob-inp {
+  width: 100%; border: 1.5px solid #c8d8f8; border-radius: 6px;
+  font-family: var(--mono); font-size: 14px; text-align: center;
+  padding: 9px 4px; color: var(--ink); outline: none;
+  background: #f0f5ff; min-height: 44px;
+  transition: border-color .15s, background .15s;
+  -webkit-appearance: none; appearance: none;
+}
+.mob-inp.stac-inp { background: #f0f9f4; border-color: #b8e0cc; }
+.mob-inp:focus { border-color: var(--blue); background: #e0ecff; box-shadow: 0 0 0 3px rgba(45,91,227,.15); }
+.mob-inp.special { color: var(--amber); font-weight: 700; }
+
+/* Mobile holiday row styles */
+.mob-day-row.mob-holiday .mob-day-lbl { color: #c0392b; }
+.mob-day-row.mob-holiday .mob-inp { background: #fff0f0; border-color: #f0b8b8; }
+.mob-day-row.mob-preholiday .mob-day-lbl { color: var(--amber); }
+.mob-day-row.mob-preholiday .mob-inp { background: #fffbf0; border-color: #f0dc90; }
+.mob-hol-name {
+  display: block; font-size: 7px; font-weight: 400;
+  color: #c0392b; line-height: 1.2; margin-top: 1px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: 36px;
+}
+
+.mob-sums {
+  padding: 8px 12px 14px;
+  display: flex; gap: 16px;
+  border-top: 1px solid var(--border); margin-top: 4px;
+}
+.mob-sum-item { display: flex; flex-direction: column; gap: 2px; }
+.mob-sum-item .lbl { font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+.mob-sum-item .lbl.amb  { color: var(--blue); }
+.mob-sum-item .lbl.stac { color: var(--green); }
+.mob-sum-item .val { font-family: var(--mono); font-size: 18px; font-weight: 600; color: var(--navy); }
+
+/* ── Legend ── */
+.legend {
+  display: flex; gap: 16px; flex-wrap: wrap; align-items: center;
+  margin-top: 14px; font-size: 11px; color: var(--muted);
+}
+.legend-item { display: flex; align-items: center; gap: 5px; }
+.swatch { width: 12px; height: 12px; border-radius: 3px; border: 1px solid rgba(0,0,0,.1); }
+.sw-amb  { background: var(--blue-lt); }
+.sw-stac { background: var(--grn-lt); }
+
+/* ── Toast ── */
+.toast {
+  position: fixed; bottom: 20px; right: 20px;
+  background: var(--navy); color: #fff;
+  padding: 10px 18px; border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+  opacity: 0; transform: translateY(6px);
+  transition: all .22s; pointer-events: none; z-index: 999;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/* ── Mobile breakpoint ── */
+@media (max-width: 1024px) {
+  .app-header { padding: 0 12px; height: 50px; }
+  .app-header h1 { font-size: 13px; }
+  .app-header .sub { display: none; }
+  .header-actions .btn span { display: none; }
+  .header-actions .btn { padding: 8px 13px; font-size: 17px; }
+  .main { padding: 10px 8px; }
+  .desktop-view { display: none; }
+  .mobile-view  { display: block; }
+  .setup-card { padding: 12px; }
+  .field select, .field input { min-width: 130px; font-size: 15px; padding: 9px 10px; }
+  .setup-row { gap: 10px; }
+  .legend { display: none; }
+}
+
+/* ── Print ── */
+@media print {
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  body { background: #fff; }
+  .app-header .header-actions, .setup-card, .legend, .toast,
+  .mobile-view { display: none !important; }
+  .desktop-view { display: block !important; }
+  .app-header {
+    position: relative; box-shadow: none;
+    background: var(--navy) !important;
+    height: auto; padding: 5px 10px;
+  }
+  .app-header h1 { font-size: 10pt; }
+  .app-header .sub { font-size: 9pt; display: inline !important; }
+  .main { padding: 2px 0; max-width: 100%; }
+  .table-wrap { border: none; overflow: visible; border-radius: 0; }
+  /*
+    A4 landscape usable ≈ 277mm (297mm − 2×10mm margins)
+    Valmiera (AMB+STAC): name=52mm, type=10mm, 31×5.3mm=164mm, sum=12mm → 238mm ✓
+    Valka (AMB only):    name=60mm, 31×5.5mm=170mm, sum=14mm → 244mm ✓
+  */
+  table.grid { width: 100%; font-size: 6pt; table-layout: fixed; }
+  table.grid th {
+    position: static; font-size: 5.5pt; padding: 2px 1px; line-height: 1.2;
+    background: var(--navy) !important; color: #fff !important;
+  }
+  table.grid th.col-name { position: static; }
+  table.grid th.col-day  { width: 5.3mm; }
+  table.grid th.col-type { width: 10mm; }
+  table.grid th.col-sum  { width: 12mm; background: #3a5070 !important; }
+  /* name width set dynamically via JS classes */
+  .has-type  th.col-name { width: 52mm; }
+  .no-type   th.col-name { width: 60mm; }
+  td.data-cell { height: 12pt; padding: 0; }
+  td.data-cell input { font-size: 5.5pt; pointer-events: none; }
+  .emp-group td.emp-name { font-size: 6pt; padding: 0 3pt; }
+  .emp-group td.type-amb, .emp-group td.type-stac { font-size: 5.5pt; }
+  td.cell-sum { font-size: 6pt; }
+  tr.sep td { height: 2pt; }
+  @page { size: A4 landscape; margin: 8mm 10mm; }
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div style="display:flex;align-items:center">
+    <h1>Darba Laika Uzskaite</h1>
+    <span class="sub" id="hdr-sub"></span>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-outline" onclick="loadFromSheets()">⟳ <span>Ielādēt</span></button>
+    <button class="btn btn-primary" onclick="window.print()">🖨 <span>Drukāt</span></button>
+  </div>
+</header>
+
+<div class="main">
+
+  <div class="setup-card">
+    <div class="setup-row">
+      <div class="field">
+        <label>Nodaļa</label>
+        <select id="sel-location" onchange="onLocChange()">
+          <option value="VALMIERA">Valmiera</option>
+          <option value="VALKA">Valka</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Mēnesis</label>
+        <select id="sel-month" onchange="init()">
+          <option value="" disabled selected>— izvēlies mēnesi —</option>
+          <option value="0">Janvāris</option><option value="1">Februāris</option>
+          <option value="2">Marts</option><option value="3">Aprīlis</option>
+          <option value="4">Maijs</option><option value="5">Jūnijs</option>
+          <option value="6">Jūlijs</option><option value="7">Augusts</option>
+          <option value="8">Septembris</option><option value="9">Oktobris</option>
+          <option value="10">Novembris</option><option value="11">Decembris</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Gads</label>
+        <input type="number" id="sel-year" value="2026" min="2024" max="2030" onchange="onLocChange()" style="width:80px">
+      </div>
+      <div class="field">
+        <label>Darbinieks</label>
+        <select id="sel-emp" onchange="init()" style="min-width:200px">
+          <option value="" disabled selected>— izvēlies darbinieku —</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Disclaimer -->
+  <div style="background:#fff8e6;border:1px solid #f0d080;border-radius:8px;padding:10px 16px;margin-bottom:14px;font-size:13px;color:#7a5500;display:flex;align-items:center;gap:8px;">
+    <span style="font-size:16px">ℹ️</span>
+    <span>Darba laiks jānorāda formātā <strong>8-16</strong>, <strong>8-11:20</strong> vai <strong>8:00-16:30</strong>. Īsinājumi: <strong>ATV</strong> = atvaļinājums, <strong>DNL</strong> = nav laika, <strong>B</strong> = brīvdiena, <strong>–</strong> = nestrādā.</span>
+  </div>
+
+  <!-- Desktop table -->
+  <div class="desktop-view">
+    <div class="table-wrap">
+      <table class="grid" id="main-table">
+        <thead id="thead"></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Mobile cards -->
+  <div class="mobile-view" id="mobile-view">
+    <div style="text-align:center;padding:40px 20px;color:#6b7a99;font-size:14px">Ielādē...</div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="swatch sw-amb"></div> AMB — ambulatorais</div>
+    <div class="legend-item"><div class="swatch sw-stac"></div> STAC — stacionārais</div>
+    <span style="margin-left:auto">ATV = atvaļinājums &nbsp;·&nbsp; DNL = nav laika &nbsp;·&nbsp; B = brīvdiena &nbsp;·&nbsp; – = nestrādā</span>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwH_VeQZ1mq8Uu7oVol2zt1CClCsP1pUwdO5zlh9Yuoe8G5-B9i-q27TQOqbc6KWGU4lA/exec";
+
+var EMP = {
+  VALMIERA: ["Anda Berzina","Anda Pavula","Anda Pudane","Anete Kauzena","Baiba Ikere","Elina Cirule","Eliza Prindule","Emils Sumanis","Evelina Kanopa","Franceska Pranca","Gunta Ribakova","Helena Zvaigznite","Ieva Gustavsone","Ieva Martinjekaba","Ieva Priede","Urgis Pakalns","Kitija Lizina","Kristine Serzane","Laura Cirule","Laura Kukjane","Laura Rudzite","Linda Kornete","Lubova Puzule","Marita Klodza","Mikus Zubovs","Oskars Orlovs","Paula Pakule","Renate Raudinazvirbule","Sanda Dicmane","Vita Bernovska","Inese Gaike","Ingrida Vitina"],
+  VALMIERA_DISPLAY: ["Anda Bērziņa","Anda Pāvula","Anda Pudāne","Anete Kaužēna","Baiba Ikere","Elīna Cīrule","Elīza Prindule","Emīls Šūmanis","Evelīna Kanopa","Frančeska Pranča","Gunta Ribakova","Helēna Zvaigznīte","Ieva Gustavsone","Ieva Mārtiņjēkaba","Ieva Priede","Jurģis Pakalns","Kitija Liziņa","Kristīne Seržāne","Laura Cīrule","Laura Kukjāne","Laura Rudzīte","Linda Kornete","Ļubova Puzule","Marita Klodža","Mikus Zubovs","Oskars Orlovs","Paula Pakule","Renāte Raudiņa-Zvirbule","Sanda Dīcmane","Vita Bernovska","Inese Gaiķe","Ingrīda Vītiņa"],
+  VALKA: ["Kitija Bergholde","Kristine Krastina"],
+  VALKA_DISPLAY: ["Kitija Bergholde","Kristīne Krastiņa"]
+};
+
+var HOL  = {1:[1],4:[3,5,6],5:[1,4],6:[22,23,24],11:[18],12:[24,25,26,31]};
+var PRE  = {4:[2],6:[21],11:[17],12:[23]};
+var NORM = [0,168,160,176,158,152,159,184,168,176,176,159,158];
+var MNTH_LV = ["Janvāris","Februāris","Marts","Aprīlis","Maijs","Jūnijs","Jūlijs","Augusts","Septembris","Oktobris","Novembris","Decembris"];
+var DAY  = ["Sv","P","O","T","C","Pk","S"];
+var SPECIAL = ["ATV","DNL","B","-","ATVALINAJUMS","BRIVDIENA"];
+
+function isHol(m1,d){ var a=HOL[m1]||[]; for(var i=0;i<a.length;i++) if(a[i]===d) return true; return false; }
+function isPre(m1,d){ var a=PRE[m1]||[]; for(var i=0;i<a.length;i++) if(a[i]===d) return true; return false; }
+function isWknd(y,m0,d){ var w=new Date(y,m0,d).getDay(); return w===0||w===6; }
+function daysIn(m0,y){ return new Date(y,m0+1,0).getDate(); }
+function isSp(v){ if(!v) return false; var u=v.trim().toUpperCase(); for(var i=0;i<SPECIAL.length;i++) if(SPECIAL[i]===u) return true; return v.trim()==="-"; }
+function getTypes(loc){ return loc==="VALKA"?["AMB"]:["AMB","STAC"]; }
+function getEmps(loc){ return loc==="VALKA"?EMP.VALKA:EMP.VALMIERA; }
+function getDisps(loc){ return loc==="VALKA"?EMP.VALKA_DISPLAY:EMP.VALMIERA_DISPLAY; }
+
+function parseH(v){
+  v=(v||"").replace(",",".").trim();
+  var r=v.match(/^(\d{1,2})[.:]?(\d{0,2})\s*[-]\s*(\d{1,2})[.:]?(\d{0,2})$/);
+  if(r){ var d=(+r[3]*60+(+r[4]||0))-(+r[1]*60+(+r[2]||0)); return d>0?d/60:null; }
+  var n=parseFloat(v);
+  if(!isNaN(n)&&v!==""){if(n>0&&n<1)return n*24;if(n>=1&&n<=24)return n;}
+  return null;
+}
+
+function calcSum(empKey,type,days){
+  var t=0,has=false;
+  for(var d=1;d<=days;d++){
+    var v=(DATA[empKey+"_"+type+"_"+d]||"").trim();
+    if(!v||isSp(v)) continue;
+    var h=parseH(v); if(h!==null){t+=h;has=true;}
+  }
+  return has?(Number.isInteger(t)?t:t.toFixed(1)):"";
+}
+
+function e(s){ return String(s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function selLoc(){ return document.getElementById("sel-location").value; }
+function selMo(){  return parseInt(document.getElementById("sel-month").value,10); }
+function selYr(){  return parseInt(document.getElementById("sel-year").value,10); }
+function selEmp(){ return document.getElementById("sel-emp").value; }
+function skey(){   return "dl_"+selLoc()+"_"+selYr()+"_"+selMo(); }
+
+var DATA={}, syncT=null, lastEmp="";
+
+// Atjauno darbinieku sarakstu kad mainās nodaļa/gads
+function onLocChange(){
+  var loc=selLoc();
+  var emps=getEmps(loc); var disps=getDisps(loc);
+  var sel=document.getElementById("sel-emp");
+  var prev=sel.value;
+  sel.innerHTML="<option value=\"\" disabled selected>\u2014 izv\u0113lies darbinieku \u2014</option>";
+  for(var i=0;i<emps.length;i++){
+    var opt=document.createElement("option");
+    opt.value=emps[i]; opt.textContent=disps[i];
+    if(emps[i]===prev) opt.selected=true;
+    sel.appendChild(opt);
+  }
+  init();
+}
+
+function init(){
+  var mv=document.getElementById("sel-month").value;
+  if(mv===""||mv===null) return;
+  var empKey=selEmp();
+  if(!empKey) return;
+
+  var loc=selLoc();
+  var m0=parseInt(mv,10);
+  var yr=selYr();
+  var m1=m0+1;
+  var days=daysIn(m0,yr);
+  var allEmps=getEmps(loc); var allDisps=getDisps(loc);
+  var ei=allEmps.indexOf(empKey);
+  var empDisp=ei>=0?allDisps[ei]:empKey;
+  var types=getTypes(loc); var has2=types.length>1; var norm=NORM[m1]||0;
+
+  document.getElementById("hdr-sub").textContent="— "+empDisp+" | "+MNTH_LV[m0]+" "+yr;
+  try{ DATA=JSON.parse(localStorage.getItem(skey())||"{}"); }catch(ex){ DATA={}; }
+
+  buildDt(loc,m0,m1,yr,days,empKey,empDisp,types,has2,norm);
+  buildMob(loc,m0,m1,yr,days,empKey,empDisp,types,has2,norm);
+}
+
+function buildDt(loc,m0,m1,yr,days,empKey,empDisp,types,has2,norm){
+  var tbl=document.getElementById("main-table");
+  tbl.className=has2?"grid has-type":"grid no-type";
+  var h="<tr>";
+  h+='<th class="col-name">Darbinieks</th>';
+  if(has2) h+='<th class="col-type">Veids</th>';
+  for(var d=1;d<=31;d++){
+    if(d>days){
+      h+='<th class="col-day" style="background:#3a5070;color:rgba(255,255,255,.1)">.</th>';
+    } else {
+      var dow=new Date(yr,m0,d).getDay();
+      var cls="col-day";
+      if(dow===0||dow===6) cls+=" weekend";
+      if(isHol(m1,d)) cls+=" holiday";
+      else if(isPre(m1,d)) cls+=" preholiday";
+      h+='<th class="'+cls+'">'+d+'<br><span style="font-size:8px;opacity:.6">'+DAY[dow]+'</span></th>';
+    }
+  }
+  h+='<th class="col-sum">Kopa'+(norm?'<br><span style="font-size:8px;font-weight:400;opacity:.75">/ '+norm+'h</span>':'')+'</th></tr>';
+  document.getElementById("thead").innerHTML=h;
+
+  var b="";
+  for(var ti=0;ti<types.length;ti++){
+    var type=types[ti];
+    var isAmb=type==="AMB";
+    var r='<tr class="emp-group '+(isAmb?"row-amb":"row-stac")+'">';
+    if(ti===0) r+='<td class="emp-name" rowspan="'+types.length+'">'+e(empDisp)+'</td>';
+    if(has2) r+='<td class="type-'+type.toLowerCase()+'">'+type+'</td>';
+    for(var d2=1;d2<=31;d2++){
+      if(d2>days){ r+='<td class="data-cell no-day"></td>'; continue; }
+      var wd=isWknd(yr,m0,d2)?" wd":"";
+      var key=empKey+"_"+type+"_"+d2;
+      var val=DATA[key]||"";
+      var sp=isSp(val)?" special":"";
+      r+='<td class="data-cell'+wd+'"><input type="text" value="'+e(val)+'" class="'+sp.trim()+'" data-key="'+e(key)+'" onchange="onC(this)" oninput="stS(this)" autocomplete="off"></td>';
+    }
+    var s=calcSum(empKey,type,days);
+    r+='<td class="cell-sum'+(isAmb?"":" stac-sum")+'" id="sum_'+e(empKey)+'_'+type+'">'+s+'</td>';
+    r+="</tr>";
+    b+=r;
+  }
+  b+='<tr class="sep"><td colspan="35"></td></tr>';
+  document.getElementById("tbody").innerHTML=b;
+}
+
+function buildMob(loc,m0,m1,yr,days,empKey,empDisp,types,has2,norm){
+  var eid="emp0";
+  var dayH="";
+  for(var d=1;d<=days;d++){
+    var dow=new Date(yr,m0,d).getDay();
+    var wknd=dow===0||dow===6;
+    var hol=isHol(m1,d); var pre=isPre(m1,d);
+    var cls="mob-day-row";
+    if(wknd) cls+=" wd";
+    if(hol)  cls+=" mob-holiday";
+    if(pre)  cls+=" mob-preholiday";
+    if(!has2) cls+=" only-amb";
+    dayH+='<div class="'+cls+'">';
+    dayH+='<div class="mob-day-lbl">'+d+'<span class="dow">'+DAY[dow]+'</span></div>';
+    for(var ti=0;ti<types.length;ti++){
+      var type=types[ti];
+      var isAmb=type==="AMB";
+      var key=empKey+"_"+type+"_"+d;
+      var val=DATA[key]||"";
+      var sp=isSp(val)?" special":"";
+      var ic="mob-inp"+(isAmb?"":" stac-inp")+sp;
+      var lbl=has2?'<span class="mob-field-lbl'+(isAmb?"":" stac")+'">'+type+'</span>':"";
+      dayH+='<div class="mob-field">'+lbl+'<input type="text" class="'+ic+'" value="'+e(val)+'" data-key="'+e(key)+'" onchange="onC(this)" oninput="stS(this)" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="characters" enterkeyhint="next"></div>';
+    }
+    dayH+='</div>';
+  }
+  var sumH='<div class="mob-sums">';
+  for(var ti=0;ti<types.length;ti++){
+    var type=types[ti]; var isAmb=type==="AMB";
+    var s=calcSum(empKey,type,days);
+    sumH+='<div class="mob-sum-item"><span class="lbl '+(isAmb?"amb":"stac")+'">'+type+'</span><span class="val" id="msum_'+e(empKey)+'_'+type+'">'+(s||"&mdash;")+'</span></div>';
+  }
+  if(norm) sumH+='<div class="mob-sum-item" style="margin-left:auto"><span class="lbl" style="color:var(--muted)">Norma</span><span class="val" style="font-size:15px;color:var(--muted)">'+norm+'h</span></div>';
+  sumH+='</div>';
+  document.getElementById("mobile-view").innerHTML=
+    '<div class="emp-card"><div class="emp-card-header" onclick="tog(\''+eid+'\')"><span>'+e(empDisp)+'</span><span class="chev" id="ic_'+eid+'">&#9660;</span></div><div class="emp-card-body open" id="bd_'+eid+'"><div class="mob-days">'+dayH+'</div>'+sumH+'</div></div>';
+}
+
+function tog(id){
+  var b=document.getElementById("bd_"+id);
+  var ic=document.getElementById("ic_"+id);
+  var open=b.classList.toggle("open");
+  if(ic) ic.classList.toggle("open",open);
+  ic.closest(".emp-card-header").classList.toggle("open",open);
+}
+
+function onC(inp){
+  var key=inp.getAttribute("data-key");
+  DATA[key]=inp.value.trim();
+  var all=document.querySelectorAll('[data-key="'+key+'"]');
+  for(var i=0;i<all.length;i++) if(all[i]!==inp) all[i].value=inp.value;
+  var m=key.match(/^(.+)_(AMB|STAC)_(\d+)$/);
+  if(m){ lastEmp=m[1]; rSum(m[1],m[2]); }
+  autoSave();
+}
+
+function stS(inp){ if(isSp(inp.value)) inp.classList.add("special"); else inp.classList.remove("special"); }
+
+function rSum(empKey,type){
+  var days=daysIn(selMo(),selYr());
+  var s=calcSum(empKey,type,days);
+  var dt=document.getElementById("sum_"+empKey+"_"+type);
+  var mb=document.getElementById("msum_"+empKey+"_"+type);
+  if(dt) dt.textContent=s;
+  if(mb) mb.textContent=s||"\u2014";
+}
+
+function autoSave(){
+  try{ localStorage.setItem(skey(),JSON.stringify(DATA)); }catch(ex){}
+  if(SCRIPT_URL==="IERAKSTI_SAVU_URL_ŠEIT") return;
+  clearTimeout(syncT);
+  syncT=setTimeout(function(){ if(lastEmp) push(lastEmp); },2000);
+}
+
+function push(empKey){
+  var loc=selLoc(); var m0=selMo(); var yr=selYr();
+  var types=getTypes(loc); var days=daysIn(m0,yr); var rows=[];
+  for(var ti=0;ti<types.length;ti++){
+    for(var d=1;d<=days;d++){
+      var val=(DATA[empKey+"_"+types[ti]+"_"+d]||"").trim();
+      if(val) rows.push({type:types[ti],day:d,val:val});
+    }
+  }
+  fetch(SCRIPT_URL,{method:"POST",body:JSON.stringify({loc:loc,month:m0+1,year:yr,emp:empKey,rows:rows})})
+    .then(function(r){return r.json();}).then(function(r){if(r.ok) toast("Saglabats");}).catch(function(){});
+}
+
+function loadFromSheets(){
+  if(SCRIPT_URL==="IERAKSTI_SAVU_URL_ŠEIT") return;
+  var loc=selLoc(); var m0=selMo(); var yr=selYr();
+  if(document.getElementById("sel-month").value==="") return;
+  var url=SCRIPT_URL+"?loc="+encodeURIComponent(loc)+"&month="+(m0+1)+"&year="+yr;
+  toast("Ielade...");
+  fetch(url).then(function(r){return r.json();}).then(function(data){
+    if(selMo()!==m0) return;
+    if(!data.ok) return;
+    for(var i=0;i<data.rows.length;i++){
+      var r=data.rows[i];
+      DATA[r.emp+"_"+r.type+"_"+r.day]=r.val;
+    }
+    try{localStorage.setItem(skey(),JSON.stringify(DATA));}catch(ex){}
+    init();
+    toast("Ieladets");
+  }).catch(function(){ toast("Nevar savienoties"); });
+}
+
+function toast(msg){
+  var t=document.getElementById("toast");
+  t.textContent=msg; t.classList.add("show");
+  setTimeout(function(){t.classList.remove("show");},2200);
+}
+
+document.addEventListener("keydown",function(e){
+  if(e.key==="Enter"&&e.target.matches("td.data-cell input")){
+    e.preventDefault();
+    var all=Array.from(document.querySelectorAll("td.data-cell input"));
+    var i=all.indexOf(e.target);
+    if(i>-1&&i<all.length-1) all[i+1].focus();
+  }
+});
+
+document.addEventListener("DOMContentLoaded",function(){
+  document.getElementById("sel-year").value=new Date().getFullYear();
+  onLocChange();
+});
+</script>
+</body>
+</html>

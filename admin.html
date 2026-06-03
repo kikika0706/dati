@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Darba Laika Uzskaite</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-padding-top: 80px; }
+
+:root {
+  --navy:   #4a6080;
+  --blue:   #2d5be3;
+  --blt:    #e8eeff;
+  --green:  #1a7a4a;
+  --glt:    #e6f4ec;
+  --amber:  #e08c00;
+  --red:    #c0392b;
+  --ink:    #4a6080;
+  --muted:  #6b7a99;
+  --border: #d0d8ea;
+  --surf:   #f4f6fb;
+  --white:  #ffffff;
+  --r:      6px;
+  --mono:   'DM Mono', monospace;
+  --sans:   'DM Sans', sans-serif;
+}
+
+body { font-family: var(--sans); background: var(--surf); color: var(--ink); }
+
+/* ── Header ── */
+.hdr {
+  background: var(--navy); color: #fff;
+  padding: 0 1.5rem; height: 52px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 2px 12px rgba(26,39,68,.3);
+}
+.hdr h1 { font-size: 14px; font-weight: 600; }
+.hdr .sub { font-size: 11px; color: rgba(255,255,255,.5); margin-left: 10px; }
+.hdr-right { display: flex; gap: 8px; align-items: center; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 6px 14px; border-radius: var(--r);
+  font-family: var(--sans); font-size: 12px; font-weight: 500;
+  cursor: pointer; border: none; transition: all .15s; white-space: nowrap;
+}
+.btn-primary { background: var(--blue); color: #fff; }
+.btn-primary:hover { background: #1e47c9; }
+.btn-outline { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.3); }
+.btn-outline:hover { background: rgba(255,255,255,.1); }
+
+/* ── Main ── */
+.main { max-width: 1500px; margin: 0 auto; padding: 20px 16px; }
+
+/* ── Controls ── */
+.controls {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 18px; margin-bottom: 16px;
+  display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap;
+}
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 11px; font-weight: 500; color: var(--muted); }
+.field select, .field input {
+  font-family: var(--sans); font-size: 14px;
+  padding: 7px 10px; border: 1px solid var(--border);
+  border-radius: var(--r); background: var(--white); color: var(--ink);
+  outline: none;
+}
+.field select:focus, .field input:focus { border-color: var(--blue); }
+
+/* ── Status bar ── */
+.status-bar {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px 18px; margin-bottom: 16px;
+  display: flex; gap: 24px; flex-wrap: wrap;
+}
+.stat { display: flex; flex-direction: column; gap: 2px; }
+.stat-val { font-size: 22px; font-weight: 600; font-family: var(--mono); color: var(--navy); }
+.stat-lbl { font-size: 11px; color: var(--muted); }
+.stat-val.ok   { color: var(--green); }
+.stat-val.warn { color: var(--amber); }
+
+/* ── Table ── */
+.table-wrap {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 10px; overflow-x: auto;
+}
+
+table.grid {
+  border-collapse: collapse; font-size: 11px;
+  width: 100%; table-layout: fixed;
+}
+
+table.grid th {
+  background: var(--navy); color: #fff;
+  font-size: 10px; font-weight: 500; text-align: center;
+  padding: 6px 2px; white-space: nowrap;
+  border: 1px solid rgba(255,255,255,.1);
+  position: sticky; top: 0;
+}
+th.col-name { text-align: left; padding-left: 10px; width: 160px; position: sticky; left: 0; z-index: 10; background: var(--navy); }
+th.col-type { width: 44px; }
+th.col-sum  { background: #3a5070; width: 52px; }
+th.col-day  { width: 34px; }
+th.weekend  { background: #3d5575; }
+th.holiday    { background: #7a2525 !important; }
+th.preholiday { background: #5a4010 !important; }
+
+/* Employee rows */
+.emp-group td.emp-name {
+  background: #f8f9fc; font-weight: 600; font-size: 11px;
+  padding: 0 8px; border-left: 3px solid var(--blue);
+  position: sticky; left: 0; z-index: 5; vertical-align: middle;
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.emp-group td.type-amb {
+  background: var(--blt); font-family: var(--mono); font-size: 10px;
+  font-weight: 500; color: var(--blue); text-align: center;
+  border: 1px solid #c8d8f8;
+}
+.emp-group td.type-stac {
+  background: var(--glt); font-family: var(--mono); font-size: 10px;
+  font-weight: 500; color: var(--green); text-align: center;
+  border: 1px solid #b8e0cc;
+}
+.row-amb  td.data-cell { background: var(--blt); border: 1px solid #c8d8f8; }
+.row-stac td.data-cell { background: var(--glt);  border: 1px solid #b8e0cc; }
+.row-amb  td.data-cell.wd { background: #dde8ff; }
+.row-stac td.data-cell.wd { background: #cce0d4; }
+td.no-day { background: #eef0f5 !important; border: 1px solid #dde2ed !important; }
+
+td.data-cell {
+  height: 26px; text-align: center; padding: 0;
+  font-family: var(--mono); font-size: 10px; vertical-align: middle;
+}
+td.data-cell .cv { display: block; }
+td.data-cell .cv.special { color: var(--amber); font-weight: 600; }
+td.data-cell .cv.empty   { color: transparent; }
+
+td.cell-sum {
+  background: var(--blt); font-family: var(--mono); font-size: 11px;
+  font-weight: 600; text-align: center; color: var(--navy);
+  border: 1px solid #c8d8f8;
+}
+td.cell-sum.stac-sum { background: var(--glt); border-color: #b8e0cc; }
+
+tr.sep td { height: 4px; background: var(--surf); border: none; }
+
+/* ── Legend ── */
+.legend {
+  margin-top: 12px; font-size: 11px; color: var(--muted);
+  display: flex; gap: 16px; flex-wrap: wrap; align-items: center;
+}
+.legend-item { display: flex; align-items: center; gap: 5px; }
+.sw { width: 12px; height: 12px; border-radius: 3px; border: 1px solid rgba(0,0,0,.1); }
+.sw-amb  { background: var(--blt); }
+.sw-stac { background: var(--glt); }
+
+/* ── Delete button per employee ── */
+.btn-del {
+  background: transparent; color: rgba(255,255,255,.0); border: none;
+  font-size: 13px; cursor: pointer; padding: 2px 6px; border-radius: 4px;
+  transition: all .15s; line-height: 1;
+}
+.emp-group:hover .btn-del { color: var(--red); }
+.btn-del:hover { background: rgba(192,57,43,.12); }
+
+/* ── Loading / empty ── */
+.state-msg {
+  text-align: center; padding: 48px 20px;
+  font-size: 14px; color: var(--muted);
+}
+
+/* ── Toast ── */
+.toast {
+  position: fixed; bottom: 20px; right: 20px;
+  background: var(--navy); color: #fff;
+  padding: 10px 18px; border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+  opacity: 0; transform: translateY(6px);
+  transition: all .22s; pointer-events: none; z-index: 999;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/* ── PRINT ── */
+@media print {
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  body { background: #fff; }
+  .hdr .hdr-right, .controls, .legend, .toast, .status-bar { display: none !important; }
+  .hdr { position: relative; box-shadow: none; height: auto; padding: 6px 12px; }
+  .hdr h1, .hdr .sub { font-size: 10pt; display: inline !important; }
+  .main { padding: 2px 0; max-width: 100%; }
+  .table-wrap { border: none; overflow: visible; border-radius: 0; }
+  table.grid { font-size: 6pt; table-layout: fixed; width: 100%; }
+  table.grid th { position: static; font-size: 5.5pt; padding: 2px 1px; }
+  th.col-name { position: static; width: 50mm; }
+  th.col-day  { width: 5mm; }
+  th.col-type { width: 9mm; }
+  th.col-sum  { width: 11mm; }
+  td.data-cell { height: 11pt; }
+  td.data-cell .cv { font-size: 5.5pt; }
+  td.cell-sum { font-size: 6pt; }
+  .emp-group td.emp-name { font-size: 6pt; padding: 0 3pt; position: static; }
+  tr.sep td { height: 2pt; }
+  @page { size: A4 landscape; margin: 8mm 10mm; }
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div style="display:flex;align-items:center">
+    <h1>Admin — Darba Laika Uzskaite</h1>
+    <span class="sub" id="hdr-sub"></span>
+  </div>
+  <div class="hdr-right">
+    <button class="btn btn-outline" onclick="loadData()">⟳ Ielādēt</button>
+    <button class="btn btn-outline" onclick="deleteSelected()" id="btn-del-sel" style="display:none;border-color:#e57368;color:#e57368">🗑 Dzēst</button>
+    <button class="btn btn-primary" onclick="window.print()">🖨 Drukāt</button>
+  </div>
+</header>
+
+<div class="main">
+
+  <div class="controls">
+    <div class="field">
+      <label>Nodaļa</label>
+      <select id="sel-loc" onchange="loadData()">
+        <option value="VALMIERA">Valmiera</option>
+        <option value="VALKA">Valka</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Mēnesis</label>
+      <select id="sel-month" onchange="loadData()">
+        <option value="1">Janvāris</option><option value="2">Februāris</option>
+        <option value="3">Marts</option><option value="4">Aprīlis</option>
+        <option value="5">Maijs</option><option value="6">Jūnijs</option>
+        <option value="7">Jūlijs</option><option value="8">Augusts</option>
+        <option value="9">Septembris</option><option value="10">Oktobris</option>
+        <option value="11">Novembris</option><option value="12">Decembris</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Gads</label>
+      <input type="number" id="sel-year" value="2026" min="2024" max="2030" style="width:80px" onchange="loadData()">
+    </div>
+  </div>
+
+  <div class="status-bar" id="status-bar" style="display:none">
+    <div class="stat"><div class="stat-val ok" id="st-filled">0</div><div class="stat-lbl">Aizpildījuši</div></div>
+    <div class="stat"><div class="stat-val warn" id="st-empty">0</div><div class="stat-lbl">Nav aizpildījuši</div></div>
+    <div class="stat"><div class="stat-val" id="st-total">0</div><div class="stat-lbl">Kopā darbinieki</div></div>
+    <div class="stat" style="margin-left:auto">
+      <div class="stat-val" style="font-size:13px;color:var(--muted)" id="st-updated"></div>
+      <div class="stat-lbl">Pēdējā atjaunināšana</div>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <div id="table-state" class="state-msg">Izvēlies nodaļu un mēnesi, tad nospied ⟳ Ielādēt</div>
+    <table class="grid" id="main-table" style="display:none">
+      <thead id="thead"></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="legend" id="legend" style="display:none">
+    <div class="legend-item"><div class="sw sw-amb"></div> AMB — ambulatorais</div>
+    <div class="legend-item"><div class="sw sw-stac"></div> STAC — stacionārais</div>
+    <span style="margin-left:auto">ATV = atvaļinājums · DNL = nav laika · B = brīvdiena · – = nestrādā</span>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// !! Aizstāj ar savu Apps Script URL !!
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwH_VeQZ1mq8Uu7oVol2zt1CClCsP1pUwdO5zlh9Yuoe8G5-B9i-q27TQOqbc6KWGU4lA/exec";
+
+
+// ── Latvijas svētku dienas 2026 ────────────────────────────────────
+const HOLIDAYS = {
+  2026: {
+    1:  [1],
+    4:  [3,5,6],
+    5:  [1,4],
+    6:  [22,23,24],
+    11: [18],
+    12: [24,25,26,31]
+  }
+};
+const PRE_HOLIDAY = {
+  2026: {
+    4:  [2],
+    6:  [21],
+    11: [17],
+    12: [23]
+  }
+};
+const WORK_NORMS = {
+  2026: [0, 168, 160, 176, 158, 152, 159, 184, 168, 176, 176, 159, 158]
+};
+const HOLIDAY_NAMES = {
+  "2026_1_1":"Jaunais gads","2026_4_3":"Lielā Piektdiena",
+  "2026_4_5":"Lieldienas","2026_4_6":"Otrās Lieldienas",
+  "2026_5_1":"Darba svētki","2026_5_4":"Neatkarības atjaunošanas diena",
+  "2026_6_22":"Pārceltā brīvdiena","2026_6_23":"Līgo diena",
+  "2026_6_24":"Jāņu diena","2026_11_18":"Proklamēšanas diena",
+  "2026_12_24":"Ziemassvētku vakars","2026_12_25":"Ziemassvētki",
+  "2026_12_26":"Otrie Ziemassvētki","2026_12_31":"Vecgada vakars"
+};
+function isHoliday(y,m,d){ return !!((HOLIDAYS[y]||{})[m]||[]).includes(d); }
+function isPreHol(y,m,d){ return !!((PRE_HOLIDAY[y]||{})[m]||[]).includes(d); }
+function holName(y,m,d){ return HOLIDAY_NAMES[y+"_"+m+"_"+d]||""; }
+function getWorkNorm(y,m){ return (WORK_NORMS[y]||{})[m]||null; }
+
+var EMP_KEYS = {
+  VALMIERA: ["Anda Berzina","Anda Pavula","Anda Pudane","Anete Kauzena","Baiba Ikere","Elina Cirule","Eliza Prindule","Emils Sumanis","Evelina Kanopa","Franceska Pranca","Gunta Ribakova","Helena Zvaigznite","Ieva Gustavsone","Ieva Martinjekaba","Ieva Priede","Urgis Pakalns","Kitija Lizina","Kristine Serzane","Laura Cirule","Laura Kukjane","Laura Rudzite","Linda Kornete","Lubova Puzule","Marita Klodza","Mikus Zubovs","Oskars Orlovs","Paula Pakule","Renate Raudinazvirbule","Sanda Dicmane","Vita Bernovska","Inese Gaike","Ingrida Vitina"],
+  VALKA: ["Kitija Bergholde","Kristine Krastina"]
+};
+var EMP_DISP = {
+  VALMIERA: ["Anda Bērziņa","Anda Pāvula","Anda Pudāne","Anete Kaužēna","Baiba Ikere","Elīna Cīrule","Elīza Prindule","Emīls Šūmanis","Evelīna Kanopa","Frančeska Pranča","Gunta Ribakova","Helēna Zvaigznīte","Ieva Gustavsone","Ieva Mārtiņjēkaba","Ieva Priede","Jurģis Pakalns","Kitija Liziņa","Kristīne Seržāne","Laura Cīrule","Laura Kukjāne","Laura Rudzīte","Linda Kornete","Ļubova Puzule","Marita Klodža","Mikus Zubovs","Oskars Orlovs","Paula Pakule","Renāte Raudiņa-Zvirbule","Sanda Dīcmane","Vita Bernovska","Inese Gaiķe","Ingrīda Vītiņa"],
+  VALKA: ["Kitija Bergholde","Kristīne Krastiņa"]
+};
+
+const SPECIAL  = new Set(["ATV","DNL","B","ATVAĻINĀJUMS","BRĪVDIENA"]);
+const MONTH_LV = ["","Janvāris","Februāris","Marts","Aprīlis","Maijs","Jūnijs",
+                  "Jūlijs","Augusts","Septembris","Oktobris","Novembris","Decembris"];
+const DAY_LV   = ["Sv","P","O","T","C","Pk","S"];
+
+function getTypes(loc){ return loc==="VALKA" ? ["AMB"] : ["AMB","STAC"]; }
+function daysInMonth(m,y){ return new Date(y,m,0).getDate(); } // m=1-12
+function isWD(y,m,d){ const w=new Date(y,m-1,d).getDay(); return w===0||w===6; }
+function isSpecial(v){ v=v||""; return v==="-"||SPECIAL.has(v.trim().toUpperCase()); }
+
+function parseTime(v){
+  v=(v||"").replace(",",".").trim();
+  const r=v.match(/(\d{1,2})[.:,]?(\d{0,2})\s*[-–]\s*(\d{1,2})[.:,]?(\d{0,2})/);
+  if(r){ const d=(+r[3]*60+(+r[4]||0))-(+r[1]*60+(+r[2]||0)); return d>0?d/60:null; }
+  const n=parseFloat(v);
+  if(!isNaN(n)){ if(n>0&&n<1)return n*24; if(n>=1&&n<=24)return n; }
+  return null;
+}
+
+function calcSum(data, emp, type, days){
+  let t=0, has=false;
+  for(let d=1;d<=days;d++){
+    const v=String(data[`${emp}_${type}_${d}`]||"").trim();
+    if(!v||isSpecial(v)) continue;
+    const h=parseTime(v); if(h!==null){t+=h;has=true;}
+  }
+  return has?(Number.isInteger(t)?t:t.toFixed(1)):"";
+}
+
+let sheetData = {};
+
+function loadData(){
+  const loc   = document.getElementById("sel-loc").value;
+  const month = +document.getElementById("sel-month").value;
+  const year  = +document.getElementById("sel-year").value;
+
+  document.getElementById("hdr-sub").textContent = `— ${loc}  |  ${MONTH_LV[month]} ${year}`;
+
+  if(SCRIPT_URL === "IERAKSTI_SAVU_URL_ŠEIT"){
+    showToast("⚠ Nav iestatīts SCRIPT_URL!");
+    return;
+  }
+
+  document.getElementById("table-state").textContent = "Ielādē...";
+  document.getElementById("table-state").style.display = "block";
+  document.getElementById("main-table").style.display  = "none";
+  document.getElementById("status-bar").style.display  = "none";
+  document.getElementById("legend").style.display      = "none";
+
+  const url = `${SCRIPT_URL}?loc=${encodeURIComponent(loc)}&month=${month}&year=${year}`;
+  fetch(url)
+    .then(r=>r.json())
+    .then(resp=>{
+      if(!resp.ok) throw new Error(resp.error||"kļūda");
+      // Build lookup: emp_TYPE_day → val
+      sheetData = {};
+      resp.rows.forEach(r=>{
+        sheetData[`${r.emp}_${r.type}_${r.day}`] = r.val;
+      });
+      renderTable(loc, month, year);
+      document.getElementById("st-updated").textContent = new Date().toLocaleTimeString("lv-LV");
+    })
+    .catch(err=>{
+      document.getElementById("table-state").textContent = "Nevar ielādēt datus. Pārbaudi SCRIPT_URL.";
+      showToast("⚠ Kļūda: "+err.message);
+    });
+}
+
+function renderTable(loc, month, year){
+  const emps = EMP_KEYS[loc]; const disps = EMP_DISP[loc];
+  const types = getTypes(loc);
+  const hasType = types.length>1;
+  const days  = daysInMonth(month, year);
+
+  // Status counts
+  let filled=0;
+  emps.forEach((emp,ei)=>{
+    const hasSome = types.some(type=>{
+      for(let d=1;d<=days;d++){
+        if((sheetData[`${emp}_${type}_${d}`]||"").trim()) return true;
+      }
+      return false;
+    });
+    if(hasSome) filled++;
+  });
+  document.getElementById("st-filled").textContent = filled;
+  document.getElementById("st-empty").textContent  = emps.length - filled;
+  document.getElementById("st-total").textContent  = emps.length;
+  document.getElementById("status-bar").style.display = "flex";
+  document.getElementById("legend").style.display     = "flex";
+
+  // thead
+  let h = '<tr>';
+  h += '<th class="col-name">Darbinieks</th>';
+  h += '<th style="background:var(--navy);width:28px"></th>';
+  if(hasType) h += '<th class="col-type">Veids</th>';
+  for(let d=1;d<=31;d++){
+    if(d>days){
+      h+=`<th class="col-day" style="background:#3a5070;color:rgba(255,255,255,.1)">·</th>`;
+    } else {
+      const dow=new Date(year,month-1,d).getDay();
+      const hol=isHoliday(year,month,d), pre=isPreHol(year,month,d), hn=holName(year,month,d);
+      const hcls=hol?" holiday":pre?" preholiday":"";
+      h+=`<th class="col-day${(dow===0||dow===6)?" weekend":""}${hcls}"${hn?' title="'+hn+'"':""} >${d}<br><span style="font-size:8px;opacity:.6">${DAY_LV[dow]}</span></th>`;
+    }
+  }
+  const norm=getWorkNorm(year,month);
+  h+=`<th class="col-sum">Kopā<br><span style="font-size:8px;font-weight:400;opacity:.75">${norm?'/ '+norm+'h':''}</span></th></tr>`;
+  document.getElementById("thead").innerHTML = h;
+
+  // tbody
+  let b="";
+  emps.forEach((emp,ei)=>{
+    types.forEach((type,ti)=>{
+      const isAmb=type==="AMB";
+      let r=`<tr class="emp-group ${isAmb?"row-amb":"row-stac"}">`;
+      if(ti===0){
+        // highlight if no data at all
+        const hasAny = types.some(t2=>{
+          for(let d=1;d<=days;d++) if((sheetData[`${emp}_${t2}_${d}`]||"").trim()) return true;
+          return false;
+        });
+        const nameStyle = hasAny ? "" : " style='border-left-color:#e08c00;color:#b06000'";
+        r+=`<td class="emp-name" rowspan="${types.length}"${nameStyle}>${disps[ei]}</td>`;
+        r+=`<td rowspan="${types.length}" style="text-align:center;vertical-align:middle;border:1px solid #dde2ed;background:#f8f9fc">
+          <button class="btn-del" onclick="confirmDelete('${emp.replace(/'/g,"\\'")}',this)" title="Dzēst ${emp.replace(/'/g,"\\'")} datus">✕</button>
+        </td>`;
+      }
+      if(hasType) r+=`<td class="type-${type.toLowerCase()}">${type}</td>`;
+      for(let d=1;d<=days;d++){
+        const wd=isWD(year,month,d)?" wd":"";
+        const val=String(sheetData[`${emp}_${type}_${d}`]||"").trim();
+        const sp=isSpecial(val)?" special":"";
+        r+=`<td class="data-cell${wd}"><span class="cv${sp}${val?"":""}">${val||""}</span></td>`;
+      }
+      for(let d=days+1;d<=31;d++) r+=`<td class="data-cell no-day"></td>`;
+      const s=calcSum(sheetData,emp,type,days);
+      r+=`<td class="cell-sum${isAmb?"":" stac-sum"}">${s}</td>`;
+      r+="</tr>";
+      b+=r;
+    });
+    b+=`<tr class="sep"><td colspan="34"></td></tr>`;
+  });
+  document.getElementById("tbody").innerHTML = b;
+  document.getElementById("table-state").style.display = "none";
+  document.getElementById("main-table").style.display  = "table";
+  showToast(`✓ Ielādēts — ${filled} no ${emps.length} aizpildījuši`);
+}
+
+function confirmDelete(emp, disp, btn){
+  const loc   = document.getElementById("sel-loc").value;
+  const month = +document.getElementById("sel-month").value;
+  const year  = +document.getElementById("sel-year").value;
+  if(!confirm(`Dzēst VISUS ierakstus darbiniekam:\n${disp||emp}\n(${loc}, ${MONTH_LV[month]} ${year})?\n\nŠo nevar atcelt!`)) return;
+  deleteEmp(emp, loc, month, year);
+}
+
+function deleteEmp(emp, loc, month, year){
+  if(SCRIPT_URL === "IERAKSTI_SAVU_URL_ŠEIT"){ showToast("⚠ Nav iestatīts SCRIPT_URL!"); return; }
+  showToast("Dzēš...");
+  // Send empty rows array — Apps Script will delete all rows for this emp/month/year
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify({loc, month, year, emp, rows:[], deleteAll:true})
+  })
+  .then(r=>r.json())
+  .then(r=>{
+    if(!r.ok) throw new Error(r.error||"kļūda");
+    // Remove from local sheetData
+    const types = getTypes(loc);
+    const days  = daysInMonth(month, year);
+    types.forEach(type=>{
+      for(let d=1;d<=days;d++) delete sheetData[`${emp}_${type}_${d}`];
+    });
+    renderTable(loc, month, year);
+    showToast(`✓ ${emp} dati dzēsti`);
+  })
+  .catch(err=>showToast("⚠ Kļūda: "+err.message));
+}
+
+function showToast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg; t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),2800);
+}
+
+window.addEventListener("DOMContentLoaded",()=>{
+  const now=new Date();
+  document.getElementById("sel-month").value=now.getMonth()+1;
+  document.getElementById("sel-year").value=now.getFullYear();
+});
+</script>
+</body>
+</html>
