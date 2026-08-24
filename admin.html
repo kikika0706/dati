@@ -271,7 +271,7 @@ tr.sep td { height: 4px; background: var(--surf); border: none; }
   <div class="legend" id="legend" style="display:none">
     <div class="legend-item"><div class="sw sw-amb"></div> AMB — ambulatorais</div>
     <div class="legend-item"><div class="sw sw-stac"></div> STAC — stacionārais</div>
-    <span style="margin-left:auto">ATV = atvaļinājums · DNL = slimības lapa · B = brīvdiena</span>
+    <span style="margin-left:auto">ATV = atvaļinājums · DNL = nav laika · B = brīvdiena · – = nestrādā</span>
   </div>
 </div>
 
@@ -319,11 +319,11 @@ function holName(y,m,d){ return HOLIDAY_NAMES[y+"_"+m+"_"+d]||""; }
 function getWorkNorm(y,m){ return (WORK_NORMS[y]||{})[m]||null; }
 
 var EMP_KEYS = {
-  VALMIERA: ["Anda Berzina","Anda Pavula","Anda Pudane","Anete Kauzena","Baiba Ikere","Elina Cirule","Elina Runce","Eliza Prindule","Emils Sumanis","Estere Sudraba","Evelina Kanopa","Franceska Pranca","Gunta Ribakova","Helena Zvaigznite","Ieva Gustavsone","Ieva Martinjekaba","Ieva Priede","Inese Gaike","Ingrida Vitina","Urgis Pakalns","Kitija Lizina","Kristine Serzane","Laura Cirule","Laura Kukjane","Laura Rudzite","Linda Kornete","Lubova Puzule","Marita Klodza","Mikus Zubovs","Oskars Orlovs","Paula Pakule","Renate Raudinazvirbule","Sanda Dicmane","Vita Bernovska"],
+  VALMIERA: ["Anda Berzina","Anda Pavula","Anda Pudane","Anete Kauzena","Baiba Ikere","Elina Cirule","Eliza Prindule","Emils Sumanis","Evelina Kanopa","Franceska Pranca","Gunta Ribakova","Helena Zvaigznite","Ieva Gustavsone","Ieva Martinjekaba","Ieva Priede","Urgis Pakalns","Kitija Lizina","Kristine Serzane","Laura Cirule","Laura Kukjane","Laura Rudzite","Linda Kornete","Lubova Puzule","Marita Klodza","Mikus Zubovs","Oskars Orlovs","Paula Pakule","Renate Raudinazvirbule","Sanda Dicmane","Vita Bernovska","Inese Gaike","Ingrida Vitina","Erika Lece"],
   VALKA: ["Kitija Bergholde","Kristine Krastina"]
 };
 var EMP_DISP = {
-  VALMIERA: ["Anda Bērziņa","Anda Pāvula","Anda Pudāne","Anete Kaužēna","Baiba Ikere","Elīna Cīrule","Elīna Runce","Elīza Prindule","Emīls Šūmanis","Estere Sudraba","Evelīna Kanopa","Frančeska Pranča","Gunta Ribakova","Helēna Zvaigznīte","Ieva Gustavsone","Ieva Mārtiņjēkaba","Ieva Priede","Inese Gaiķe","Ingrīda Vītiņa","Jurģis Pakalns","Kitija Liziņa","Kristīne Seržāne","Laura Cīrule","Laura Kukjāne","Laura Rudzīte","Linda Kornete","Ļubova Puzule","Marita Klodža","Mikus Zubovs","Oskars Orlovs","Paula Pakule","Renāte Raudiņa-Zvirbule","Sanda Dīcmane","Vita Bernovska"],
+  VALMIERA: ["Anda Bērziņa","Anda Pāvula","Anda Pudāne","Anete Kaužēna","Baiba Ikere","Elīna Cīrule","Elīza Prindule","Emīls Šūmanis","Evelīna Kanopa","Frančeska Pranča","Gunta Ribakova","Helēna Zvaigznīte","Ieva Gustavsone","Ieva Mārtiņjēkaba","Ieva Priede","Jurģis Pakalns","Kitija Liziņa","Kristīne Seržāne","Laura Cīrule","Laura Kukjāne","Laura Rudzīte","Linda Kornete","Ļubova Puzule","Marita Klodža","Mikus Zubovs","Oskars Orlovs","Paula Pakule","Renāte Raudiņa-Zvirbule","Sanda Dīcmane","Vita Bernovska","Inese Gaiķe","Ingrīda Vītiņa","Ērika Lece"],
   VALKA: ["Kitija Bergholde","Kristīne Krastiņa"]
 };
 
