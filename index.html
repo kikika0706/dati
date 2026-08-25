@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Darba Laika Uzskaite</title>
+<title>Informācija</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -308,8 +308,7 @@ tr.sep td { height: 5px; background: var(--surface); border: none; }
 
 <header class="app-header">
   <div style="display:flex;align-items:center">
-    <h1>Darba Laika Uzskaite</h1>
-    <span class="sub" id="hdr-sub"></span>
+    <h1>Informācija</h1>
   </div>
   <div class="header-actions">
     <button class="btn btn-outline" onclick="loadFromSheets()">⟳ <span>Ielādēt</span></button>
@@ -322,16 +321,9 @@ tr.sep td { height: 5px; background: var(--surface); border: none; }
   <div class="setup-card">
     <div class="setup-row">
       <div class="field">
-        <label>Nodaļa</label>
-        <select id="sel-location" onchange="onLocChange()">
-          <option value="VALMIERA">Valmiera</option>
-          <option value="VALKA">Valka</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Mēnesis</label>
+        
         <select id="sel-month" onchange="init()">
-          <option value="" disabled selected>— izvēlies mēnesi —</option>
+          <option value="" disabled selected>izvēlies</option>
           <option value="0">Janvāris</option><option value="1">Februāris</option>
           <option value="2">Marts</option><option value="3">Aprīlis</option>
           <option value="4">Maijs</option><option value="5">Jūnijs</option>
@@ -341,22 +333,16 @@ tr.sep td { height: 5px; background: var(--surface); border: none; }
         </select>
       </div>
       <div class="field">
-        <label>Gads</label>
+        
         <input type="number" id="sel-year" value="2026" min="2024" max="2030" onchange="onLocChange()" style="width:80px">
       </div>
       <div class="field">
-        <label>Darbinieks</label>
+        
         <select id="sel-emp" onchange="init()" style="min-width:200px">
-          <option value="" disabled selected>— izvēlies darbinieku —</option>
+          <option value="" disabled selected>izvēlies sevi</option>
         </select>
       </div>
     </div>
-  </div>
-
-  <!-- Disclaimer -->
-  <div style="background:#fff8e6;border:1px solid #f0d080;border-radius:8px;padding:10px 16px;margin-bottom:14px;font-size:13px;color:#7a5500;display:flex;align-items:center;gap:8px;">
-    <span style="font-size:16px">ℹ️</span>
-    <span>Darba laiks jānorāda formātā <strong>8-16</strong>, <strong>8-11:20</strong> vai <strong>8:00-16:30</strong>. Īsinājumi: <strong>ATV</strong> = atvaļinājums, <strong>DNL</strong> = nav laika, <strong>B</strong> = brīvdiena, <strong>–</strong> = nestrādā.</span>
   </div>
 
   <!-- Desktop table -->
@@ -375,8 +361,8 @@ tr.sep td { height: 5px; background: var(--surface); border: none; }
   </div>
 
   <div class="legend">
-    <div class="legend-item"><div class="swatch sw-amb"></div> AMB — ambulatorais</div>
-    <div class="legend-item"><div class="swatch sw-stac"></div> STAC — stacionārais</div>
+    <div class="legend-item"><div class="swatch sw-amb"></div> A — ambulatorais</div>
+    <div class="legend-item"><div class="swatch sw-stac"></div> S — stacionārais</div>
     <span style="margin-left:auto">ATV = atvaļinājums &nbsp;·&nbsp; DNL = nav laika &nbsp;·&nbsp; B = brīvdiena &nbsp;·&nbsp; – = nestrādā</span>
   </div>
 </div>
@@ -388,9 +374,7 @@ var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwH_VeQZ1mq8Uu7oVol2zt
 
 var EMP = {
   VALMIERA: ["Anda Berzina","Anda Pavula","Anda Pudane","Anete Kauzena","Baiba Ikere","Elina Cirule","Eliza Prindule","Emils Sumanis","Evelina Kanopa","Franceska Pranca","Gunta Ribakova","Helena Zvaigznite","Ieva Gustavsone","Ieva Martinjekaba","Ieva Priede","Urgis Pakalns","Kitija Lizina","Kristine Serzane","Laura Cirule","Laura Kukjane","Laura Rudzite","Linda Kornete","Lubova Puzule","Marita Klodza","Mikus Zubovs","Oskars Orlovs","Paula Pakule","Renate Raudinazvirbule","Sanda Dicmane","Vita Bernovska","Inese Gaike","Ingrida Vitina","Erika Lece","Agnija Irkle"],
-  VALMIERA_DISPLAY: ["Anda Bērziņa","Anda Pāvula","Anda Pudāne","Anete Kaužēna","Baiba Ikere","Elīna Cīrule","Elīza Prindule","Emīls Šūmanis","Evelīna Kanopa","Frančeska Pranča","Gunta Ribakova","Helēna Zvaigznīte","Ieva Gustavsone","Ieva Mārtiņjēkaba","Ieva Priede","Jurģis Pakalns","Kitija Liziņa","Kristīne Seržāne","Laura Cīrule","Laura Kukjāne","Laura Rudzīte","Linda Kornete","Ļubova Puzule","Marita Klodža","Mikus Zubovs","Oskars Orlovs","Paula Pakule","Renāte Raudiņa-Zvirbule","Sanda Dīcmane","Vita Bernovska","Inese Gaiķe","Ingrīda Vītiņa","Ērika Lece","Agnija Irkle"],
-  VALKA: ["Kitija Bergholde","Kristine Krastina"],
-  VALKA_DISPLAY: ["Kitija Bergholde","Kristīne Krastiņa"]
+  VALMIERA_DISPLAY: ["A.B.","A.Pā.","A.Pu.","A.K.","B.I.","E.C.","E.P.","E.Š.","E.K.","F.P.","G.R.","H.Z.","I.Gu.","I.M.","I.P.","J.P.","K.L.","K.S.","L.C.","L.Ku.","L.R.","L.Ko.","Ļ.P.","M.K.","M.Z.","O.O.","P.P.","R.R.","S.D.","V.B.","I.Ga.","I.V.","Ē.L.","A.I."]
 };
 
 var HOL  = {1:[1],4:[3,5,6],5:[1,4],6:[22,23,24],11:[18],12:[24,25,26,31]};
@@ -405,9 +389,9 @@ function isPre(m1,d){ var a=PRE[m1]||[]; for(var i=0;i<a.length;i++) if(a[i]===d
 function isWknd(y,m0,d){ var w=new Date(y,m0,d).getDay(); return w===0||w===6; }
 function daysIn(m0,y){ return new Date(y,m0+1,0).getDate(); }
 function isSp(v){ if(!v) return false; var u=v.trim().toUpperCase(); for(var i=0;i<SPECIAL.length;i++) if(SPECIAL[i]===u) return true; return v.trim()==="-"; }
-function getTypes(loc){ return loc==="VALKA"?["AMB"]:["AMB","STAC"]; }
-function getEmps(loc){ return loc==="VALKA"?EMP.VALKA:EMP.VALMIERA; }
-function getDisps(loc){ return loc==="VALKA"?EMP.VALKA_DISPLAY:EMP.VALMIERA_DISPLAY; }
+function getTypes(){ return ["AMB","STAC"]; }
+function getEmps(){ return EMP.VALMIERA; }
+function getDisps(){ return EMP.VALMIERA_DISPLAY; }
 
 function parseH(v){
   v=(v||"").replace(",",".").trim();
@@ -429,7 +413,7 @@ function calcSum(empKey,type,days){
 }
 
 function e(s){ return String(s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-function selLoc(){ return document.getElementById("sel-location").value; }
+function selLoc(){ return "VALMIERA"; }
 function selMo(){  return parseInt(document.getElementById("sel-month").value,10); }
 function selYr(){  return parseInt(document.getElementById("sel-year").value,10); }
 function selEmp(){ return document.getElementById("sel-emp").value; }
@@ -440,10 +424,10 @@ var DATA={}, syncT=null, lastEmp="";
 // Atjauno darbinieku sarakstu kad mainās nodaļa/gads
 function onLocChange(){
   var loc=selLoc();
-  var emps=getEmps(loc); var disps=getDisps(loc);
+  var emps=getEmps(); var disps=getDisps();
   var sel=document.getElementById("sel-emp");
   var prev=sel.value;
-  sel.innerHTML="<option value=\"\" disabled selected>\u2014 izv\u0113lies darbinieku \u2014</option>";
+  sel.innerHTML="<option value=\"\" disabled selected>izvēlies sevi</option>";
   for(var i=0;i<emps.length;i++){
     var opt=document.createElement("option");
     opt.value=emps[i]; opt.textContent=disps[i];
@@ -464,12 +448,12 @@ function init(){
   var yr=selYr();
   var m1=m0+1;
   var days=daysIn(m0,yr);
-  var allEmps=getEmps(loc); var allDisps=getDisps(loc);
+  var allEmps=getEmps(); var allDisps=getDisps();
   var ei=allEmps.indexOf(empKey);
   var empDisp=ei>=0?allDisps[ei]:empKey;
-  var types=getTypes(loc); var has2=types.length>1; var norm=NORM[m1]||0;
+  var types=getTypes(); var has2=types.length>1; var norm=NORM[m1]||0;
 
-  document.getElementById("hdr-sub").textContent="— "+empDisp+" | "+MNTH_LV[m0]+" "+yr;
+  
   try{ DATA=JSON.parse(localStorage.getItem(skey())||"{}"); }catch(ex){ DATA={}; }
 
   buildDt(loc,m0,m1,yr,days,empKey,empDisp,types,has2,norm);
@@ -480,7 +464,7 @@ function buildDt(loc,m0,m1,yr,days,empKey,empDisp,types,has2,norm){
   var tbl=document.getElementById("main-table");
   tbl.className=has2?"grid has-type":"grid no-type";
   var h="<tr>";
-  h+='<th class="col-name">Darbinieks</th>';
+  h+='<th class="col-name"></th>';
   if(has2) h+='<th class="col-type">Veids</th>';
   for(var d=1;d<=31;d++){
     if(d>days){
@@ -597,7 +581,7 @@ function autoSave(){
 
 function push(empKey){
   var loc=selLoc(); var m0=selMo(); var yr=selYr();
-  var types=getTypes(loc); var days=daysIn(m0,yr); var rows=[];
+  var types=getTypes(); var days=daysIn(m0,yr); var rows=[];
   for(var ti=0;ti<types.length;ti++){
     for(var d=1;d<=days;d++){
       var val=(DATA[empKey+"_"+types[ti]+"_"+d]||"").trim();

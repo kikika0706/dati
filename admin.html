@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin — Darba Laika Uzskaite</title>
+<title>Informācija</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -213,8 +213,8 @@ tr.sep td { height: 4px; background: var(--surf); border: none; }
 
 <header class="hdr">
   <div style="display:flex;align-items:center">
-    <h1>Admin — Darba Laika Uzskaite</h1>
-    <span class="sub" id="hdr-sub"></span>
+    <h1>Informācija</h1>
+    
   </div>
   <div class="hdr-right">
     <button class="btn btn-outline" onclick="loadData()">⟳ Ielādēt</button>
@@ -227,14 +227,7 @@ tr.sep td { height: 4px; background: var(--surf); border: none; }
 
   <div class="controls">
     <div class="field">
-      <label>Nodaļa</label>
-      <select id="sel-loc" onchange="loadData()">
-        <option value="VALMIERA">Valmiera</option>
-        <option value="VALKA">Valka</option>
-      </select>
-    </div>
-    <div class="field">
-      <label>Mēnesis</label>
+      
       <select id="sel-month" onchange="loadData()">
         <option value="1">Janvāris</option><option value="2">Februāris</option>
         <option value="3">Marts</option><option value="4">Aprīlis</option>
@@ -245,7 +238,7 @@ tr.sep td { height: 4px; background: var(--surf); border: none; }
       </select>
     </div>
     <div class="field">
-      <label>Gads</label>
+      
       <input type="number" id="sel-year" value="2026" min="2024" max="2030" style="width:80px" onchange="loadData()">
     </div>
   </div>
@@ -319,12 +312,10 @@ function holName(y,m,d){ return HOLIDAY_NAMES[y+"_"+m+"_"+d]||""; }
 function getWorkNorm(y,m){ return (WORK_NORMS[y]||{})[m]||null; }
 
 var EMP_KEYS = {
-  VALMIERA: ["Anda Berzina","Anda Pavula","Anda Pudane","Anete Kauzena","Baiba Ikere","Elina Cirule","Eliza Prindule","Emils Sumanis","Evelina Kanopa","Franceska Pranca","Gunta Ribakova","Helena Zvaigznite","Ieva Gustavsone","Ieva Martinjekaba","Ieva Priede","Urgis Pakalns","Kitija Lizina","Kristine Serzane","Laura Cirule","Laura Kukjane","Laura Rudzite","Linda Kornete","Lubova Puzule","Marita Klodza","Mikus Zubovs","Oskars Orlovs","Paula Pakule","Renate Raudinazvirbule","Sanda Dicmane","Vita Bernovska","Inese Gaike","Ingrida Vitina","Erika Lece","Agnija Irkle"],
-  VALKA: ["Kitija Bergholde","Kristine Krastina"]
+  VALMIERA: ["Anda Berzina","Anda Pavula","Anda Pudane","Anete Kauzena","Baiba Ikere","Elina Cirule","Eliza Prindule","Emils Sumanis","Evelina Kanopa","Franceska Pranca","Gunta Ribakova","Helena Zvaigznite","Ieva Gustavsone","Ieva Martinjekaba","Ieva Priede","Urgis Pakalns","Kitija Lizina","Kristine Serzane","Laura Cirule","Laura Kukjane","Laura Rudzite","Linda Kornete","Lubova Puzule","Marita Klodza","Mikus Zubovs","Oskars Orlovs","Paula Pakule","Renate Raudinazvirbule","Sanda Dicmane","Vita Bernovska","Inese Gaike","Ingrida Vitina","Erika Lece","Agnija Irkle"]
 };
 var EMP_DISP = {
-  VALMIERA: ["Anda Bērziņa","Anda Pāvula","Anda Pudāne","Anete Kaužēna","Baiba Ikere","Elīna Cīrule","Elīza Prindule","Emīls Šūmanis","Evelīna Kanopa","Frančeska Pranča","Gunta Ribakova","Helēna Zvaigznīte","Ieva Gustavsone","Ieva Mārtiņjēkaba","Ieva Priede","Jurģis Pakalns","Kitija Liziņa","Kristīne Seržāne","Laura Cīrule","Laura Kukjāne","Laura Rudzīte","Linda Kornete","Ļubova Puzule","Marita Klodža","Mikus Zubovs","Oskars Orlovs","Paula Pakule","Renāte Raudiņa-Zvirbule","Sanda Dīcmane","Vita Bernovska","Inese Gaiķe","Ingrīda Vītiņa","Ērika Lece","Agnija Irkle"],
-  VALKA: ["Kitija Bergholde","Kristīne Krastiņa"]
+  VALMIERA: ["A.B.","A.Pā.","A.Pu.","A.K.","B.I.","E.C.","E.P.","E.Š.","E.K.","F.P.","G.R.","H.Z.","I.Gu.","I.M.","I.P.","J.P.","K.L.","K.S.","L.C.","L.Ku.","L.R.","L.Ko.","Ļ.P.","M.K.","M.Z.","O.O.","P.P.","R.R.","S.D.","V.B.","I.Ga.","I.V.","Ē.L.","A.I."]
 };
 
 const SPECIAL  = new Set(["ATV","DNL","B","ATVAĻINĀJUMS","BRĪVDIENA"]);
@@ -332,7 +323,7 @@ const MONTH_LV = ["","Janvāris","Februāris","Marts","Aprīlis","Maijs","Jūnij
                   "Jūlijs","Augusts","Septembris","Oktobris","Novembris","Decembris"];
 const DAY_LV   = ["Sv","P","O","T","C","Pk","S"];
 
-function getTypes(loc){ return loc==="VALKA" ? ["AMB"] : ["AMB","STAC"]; }
+function getTypes(){ return ["AMB","STAC"]; }
 function daysInMonth(m,y){ return new Date(y,m,0).getDate(); } // m=1-12
 function isWD(y,m,d){ const w=new Date(y,m-1,d).getDay(); return w===0||w===6; }
 function isSpecial(v){ v=v||""; return v==="-"||SPECIAL.has(v.trim().toUpperCase()); }
@@ -359,11 +350,11 @@ function calcSum(data, emp, type, days){
 let sheetData = {};
 
 function loadData(){
-  const loc   = document.getElementById("sel-loc").value;
+  const loc   = "VALMIERA";
   const month = +document.getElementById("sel-month").value;
   const year  = +document.getElementById("sel-year").value;
 
-  document.getElementById("hdr-sub").textContent = `— ${loc}  |  ${MONTH_LV[month]} ${year}`;
+  
 
   if(SCRIPT_URL === "IERAKSTI_SAVU_URL_ŠEIT"){
     showToast("⚠ Nav iestatīts SCRIPT_URL!");
@@ -397,7 +388,7 @@ function loadData(){
 
 function renderTable(loc, month, year){
   const emps = EMP_KEYS[loc]; const disps = EMP_DISP[loc];
-  const types = getTypes(loc);
+  const types = getTypes();
   const hasType = types.length>1;
   const days  = daysInMonth(month, year);
 
@@ -420,7 +411,7 @@ function renderTable(loc, month, year){
 
   // thead
   let h = '<tr>';
-  h += '<th class="col-name">Darbinieks</th>';
+  h += '<th class="col-name"></th>';
   h += '<th style="background:var(--navy);width:28px"></th>';
   if(hasType) h += '<th class="col-type">Veids</th>';
   for(let d=1;d<=31;d++){
@@ -455,7 +446,7 @@ function renderTable(loc, month, year){
           <button class="btn-del" onclick="confirmDelete('${emp.replace(/'/g,"\\'")}',this)" title="Dzēst ${emp.replace(/'/g,"\\'")} datus">✕</button>
         </td>`;
       }
-      if(hasType) r+=`<td class="type-${type.toLowerCase()}">${type}</td>`;
+      if(hasType) r+=`<td class="type-${type.toLowerCase()}">${type.replace("AMB","A").replace("STAC","S")}</td>`;
       for(let d=1;d<=days;d++){
         const wd=isWD(year,month,d)?" wd":"";
         const val=String(sheetData[`${emp}_${type}_${d}`]||"").trim();
@@ -477,7 +468,7 @@ function renderTable(loc, month, year){
 }
 
 function confirmDelete(emp, disp, btn){
-  const loc   = document.getElementById("sel-loc").value;
+  const loc   = "VALMIERA";
   const month = +document.getElementById("sel-month").value;
   const year  = +document.getElementById("sel-year").value;
   if(!confirm(`Dzēst VISUS ierakstus darbiniekam:\n${disp||emp}\n(${loc}, ${MONTH_LV[month]} ${year})?\n\nŠo nevar atcelt!`)) return;
@@ -496,7 +487,7 @@ function deleteEmp(emp, loc, month, year){
   .then(r=>{
     if(!r.ok) throw new Error(r.error||"kļūda");
     // Remove from local sheetData
-    const types = getTypes(loc);
+    const types = getTypes();
     const days  = daysInMonth(month, year);
     types.forEach(type=>{
       for(let d=1;d<=days;d++) delete sheetData[`${emp}_${type}_${d}`];
